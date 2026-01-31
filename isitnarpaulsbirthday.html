@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Is It Narpaul's Birthday?</title>
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; font-size: 10rem; font-weight: bold; margin: 0; }
+    </style>
+</head>
+<body>
+    <div id="answer"></div>
+    <script>
+        const now = new Date();
+        const isNarpaulBday = (now.getMonth() === 0 && now.getDate() === 31);
+        document.getElementById('answer').innerText = isNarpaulBday ? "YES" : "NO";
+    </script>
+</body>
+</html>
