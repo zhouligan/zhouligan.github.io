@@ -60,7 +60,8 @@
         const result = isBirthday ? "YES!" : "NO";
 
         document.getElementById('answer').innerText = result;
-        document.title = result;
+        // uncomment below if want site title to match result
+        // document.title = result;
 
         if (isBirthday) {
             document.getElementById('festive-image').style.display = "block";
