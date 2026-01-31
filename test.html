@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Is it their Birthday?</title>
+    <style>
+        body { 
+            display: flex; flex-direction: column; justify-content: center; 
+            align-items: center; height: 100vh; margin: 0;
+            font-family: 'Arial', sans-serif; font-weight: bold; text-align: center;
+        }
+        #answer { font-size: 8rem; margin-bottom: 20px; }
+        #festive-image { display: none; max-width: 300px; margin-bottom: 20px; border-radius: 15px; }
+        #video-container { display: none; width: 560px; height: 315px; }
+    </style>
+</head>
+<body>
+    <div id="answer">Checking...</div>
+    <img id="festive-image" src="Narpaul.png" alt="Happy Birthday!">
+    <div id="video-container">
+        <!-- Replace VIDEO_ID with the letters after "v=" in your YouTube URL -->
+        <iframe id="player" width="560" height="315" 
+                src="https://www.youtube.com/watch?v=vYMxOzxKYYo" 
+                frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
+        </iframe>
+    </div>
+
+    <script>
+        // CONFIGURATION: Set the birthday here (Note: Jan = 0, Feb = 1, etc.)
+        const TARGET_MONTH = 0;
+        const TARGET_DAY = 31;
+
+        const now = new Date();
+        const isBirthday = (now.getMonth() === TARGET_MONTH && now.getDate() === TARGET_DAY);
+        const result = isBirthday ? "YES!" : "NO";
+
+        document.getElementById('answer').innerText = result;
+        document.title = result;
+
+        if (isBirthday) {
+            document.getElementById('festive-image').style.display = "block";
+            document.getElementById('video-container').style.display = "block";
+            document.body.style.backgroundColor = "#ffeb3b"; // Birthday Yellow
+        }
+    </script>
+</body>
+</html>
