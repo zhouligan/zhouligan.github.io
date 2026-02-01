@@ -216,20 +216,12 @@
     function playWithSound() {
         const iframe = document.querySelector('iframe');
         const btn = document.getElementById('unmute-btn');
-
         btn.classList.add('hidden');
 
-        // Small celebratory burst when they click
-        confetti({
-            particleCount: 40,
-            scalar: 0.7,
-            origin: { y: 0.7 }
-        });
-
+        //reload with sound
         setTimeout(() => {
             iframe.src = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1`;
         }, 200); 
-
         setTimeout(() => { btn.style.display = 'none'; }, 700);
     }
 </script>
