@@ -42,6 +42,7 @@
         
         #video-container { 
             display: none;      /* Hidden until the reveal */
+            position: relative; /* Allows button to sit on top of video */
             width: 90%;         /* Responsive width */
             max-width: 800px;   /* Limits size on big screens */
             aspect-ratio: 16 / 9; 
@@ -49,7 +50,6 @@
             border-radius: 15px;
             overflow: hidden;   /* Clips the video corners to the border-radius */
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            position: relative; /* Allows button to sit on top of video */
         }
         
         #video-container iframe {
@@ -63,7 +63,7 @@
             position: absolute;
             top: 15px;
             right: 15px;
-            z-index: 10;
+            z-index: 999;
             padding: 12px 20px;
             background: rgba(255, 255, 255, 0.95);
             border: none;
@@ -144,17 +144,10 @@
     <div id="answer">Checking...</div>
     <img id="festive-image" src="/isitnarpaulsbirthday/Narpaul.png" alt="Happy Birthday!">
     <div id="video-container">
-        <iframe id="player"
-                src="https://www.youtube.com/embed/vYMxOzxKYYo" 
-                frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
-        </iframe>
-        <!-- previously iframe had dimensions width="560" height="315" -->
-    </div>
-    <div id="video-container">
         <button id="unmute-btn" onclick="playWithSound()">🔊 Tap for Sound</button>
         <iframe 
             src="https://www.youtube.com/embed/vYMxOzxKYYo?autoplay=1&mute=1" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allow="autoplay; encrypted-media" 
             allowfullscreen>
         </iframe>
     </div>
