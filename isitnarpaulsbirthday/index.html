@@ -49,12 +49,39 @@
             border-radius: 15px;
             overflow: hidden;   /* Clips the video corners to the border-radius */
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative; /* Allows button to sit on top of video */
         }
         
         #video-container iframe {
             width: 100%;
             height: 100%;
             border: none;
+        }
+
+        #unmute-btn {
+            display: none; /* Hidden until birthday logic runs */
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 10;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 50px; /* Pill shape */
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            
+            /* The transition magic */
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            opacity: 1;
+        }
+        
+        /* When this class is added via JS, the button fades */
+        #unmute-btn.hidden {
+            opacity: 0;
+            pointer-events: none; /* Prevents clicking while it's fading */
+            transform: translateY(-10px); /* Subtle lift while fading */
         }
         
         img {
@@ -75,6 +102,42 @@
           90% { transform: translate(1px, 2px) rotate(0deg); }
           100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
+
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 999;
+        }
+        
+        .confetti {
+            position: absolute;
+            /* Start everything at the bottom-center */
+            left: 50%;
+            bottom: 0;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+        
+        @keyframes fountain {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            /* The "Peak" of the jump */
+            50% {
+                opacity: 1;
+            }
+            100% {
+                /* var(--x) and var(--y) will be set by JavaScript */
+                transform: translate(var(--x), var(--y)) scale(0.5) rotate(720deg);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -88,6 +151,7 @@
         <!-- previously iframe had dimensions width="560" height="315" -->
     </div>
     <div id="video-container">
+        <button id="unmute-btn" onclick="playWithSound()">🔊 Tap for Sound</button>
         <iframe 
             src="https://www.youtube.com/embed/vYMxOzxKYYo?autoplay=1&mute=1" 
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -95,34 +159,87 @@
         </iframe>
     </div>
 
-    <script>
-        // CONFIGURATION: Set the birthday here (Note: Jan = 0, Feb = 1, etc.)
-        const TARGET_MONTH = 0; // January
-        const TARGET_DAY = 31;
+
+<script>
+    const TARGET_MONTH = 0; 
+    const TARGET_DAY = 31;
+    const VIDEO_ID = "vYMxOzxKYYo"; 
+
+    const now = new Date();
+    const isBirthday = (now.getMonth() === TARGET_MONTH && now.getDate() === TARGET_DAY);
+
+    if (isBirthday) {
+        document.getElementById('answer').innerText = "YES!";
+        document.getElementById('festive-image').style.display = "block";
+        document.getElementById('video-container').style.display = "block";
+        document.getElementById('unmute-btn').style.display = "block";
+        
+        // Start muted video
+        const iframe = document.querySelector('iframe');
+        iframe.src = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&mute=1`;
+        
+        document.body.style.backgroundColor = "#ffeb3b";
+
+        // 🎉 Launch the Big Confetti!
+        launchConfetti();
+    } else {
+        document.getElementById('answer').innerText = "NO";
+    }
+
+    function launchConfetti() {
+        const container = document.createElement('div');
+        container.className = 'confetti-container';
+        document.body.appendChild(container);
     
-        const now = new Date();
-        const isBirthday = (now.getMonth() === TARGET_MONTH && now.getDate() === TARGET_DAY);
-        const result = isBirthday ? "YES!" : "NO";
+        const colors = ['#ff4081', '#ffeb3b', '#3f51b5', '#4caf50', '#00bcd4'];
     
-        document.getElementById('answer').innerText = result;
-    
-        if (isBirthday) {
-            // 1. Show the hidden elements
-            const festiveImage = document.getElementById('festive-image');
-            const videoContainer = document.getElementById('video-container');
+        for (let i = 0; i < 100; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
             
-            festiveImage.style.display = "block";
-            videoContainer.style.display = "block";
+            // Random style
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px'; // Mix of circles and squares
             
-            // 2. The "Kickstart" Trick: Force the iframe to load the autoplay URL
-            const iframe = videoContainer.querySelector('iframe');
-            if (iframe) {
-                iframe.src = "https://www.youtube.com/embed/vYMxOzxKYYo?autoplay=1&mute=1";
-            }
+            // Randomize the "Spread" using CSS Variables
+            // Horizontal: -400px to +400px | Vertical: -60vh to -90vh
+            const destinationX = (Math.random() - 0.5) * 800 + 'px';
+            const destinationY = -(Math.random() * 40 + 60) + 'vh';
+            
+            confetti.style.setProperty('--x', destinationX);
+            confetti.style.setProperty('--y', destinationY);
+            
+            // Randomize timing
+            const duration = Math.random() * 1.5 + 1.5 + 's';
+            confetti.style.animation = `fountain ${duration} ease-out forwards`;
     
-            // 3. Update styling
-            document.body.style.backgroundColor = "#ffeb3b"; // Birthday Yellow
+            container.appendChild(confetti);
         }
-    </script>
+    
+        // Clean up
+        setTimeout(() => { container.remove(); }, 4000);
+    }
+
+    function playWithSound() {
+        const iframe = document.querySelector('iframe');
+        const btn = document.getElementById('unmute-btn');
+
+        btn.classList.add('hidden');
+
+        // Small celebratory burst when they click
+        confetti({
+            particleCount: 40,
+            scalar: 0.7,
+            origin: { y: 0.7 }
+        });
+
+        setTimeout(() => {
+            iframe.src = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1`;
+        }, 200); 
+
+        setTimeout(() => { btn.style.display = 'none'; }, 700);
+    }
+</script>
+    
 </body>
 </html>
