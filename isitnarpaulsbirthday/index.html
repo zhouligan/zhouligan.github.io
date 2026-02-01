@@ -97,20 +97,30 @@
 
     <script>
         // CONFIGURATION: Set the birthday here (Note: Jan = 0, Feb = 1, etc.)
-        const TARGET_MONTH = 0;
+        const TARGET_MONTH = 0; // January
         const TARGET_DAY = 31;
-
+    
         const now = new Date();
         const isBirthday = (now.getMonth() === TARGET_MONTH && now.getDate() === TARGET_DAY);
         const result = isBirthday ? "YES!" : "NO";
-
+    
         document.getElementById('answer').innerText = result;
-        // uncomment below if want site title to match result
-        // document.title = result;
-
+    
         if (isBirthday) {
-            document.getElementById('festive-image').style.display = "block";
-            document.getElementById('video-container').style.display = "block";
+            // 1. Show the hidden elements
+            const festiveImage = document.getElementById('festive-image');
+            const videoContainer = document.getElementById('video-container');
+            
+            festiveImage.style.display = "block";
+            videoContainer.style.display = "block";
+            
+            // 2. The "Kickstart" Trick: Force the iframe to load the autoplay URL
+            const iframe = videoContainer.querySelector('iframe');
+            if (iframe) {
+                iframe.src = "https://www.youtube.com/embed/vYMxOzxKYYo?autoplay=1&mute=1";
+            }
+    
+            // 3. Update styling
             document.body.style.backgroundColor = "#ffeb3b"; // Birthday Yellow
         }
     </script>
