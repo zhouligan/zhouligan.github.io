@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Is It Rutendo's Birthday?</title>
+    <!-- favicon stuff -->
+    <link rel="icon" type="image/png" href="/isitrutendosbirthday/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/isitrutendosbirthday/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/isitrutendosbirthday/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/isitrutendosbirthday/favicon/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="RutendoBday" />
+    <link rel="manifest" href="/isitrutendosbirthday/favicon/site.webmanifest" />
+    <!-- end favicon stuff -->
+    <style>
+        body { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; /* Changed to min-height for better scrolling if content grows */
+            margin: 0;
+            font-family: 'Arial', sans-serif; 
+            font-weight: bold; 
+            text-align: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        #answer { 
+            font-size: clamp(4rem, 15vw, 8rem); /* Responsive font: min, preferred, max */
+            margin-bottom: 20px; 
+            color: #333;
+        }
+        
+        #festive-image { 
+            display: none; 
+            width: 90%;          /* Responsive: shrinks for small screens */
+            max-width: 640px;    /* Matches your image's actual size for maximum clarity */
+            height: auto;        /* Keeps it a perfect square */
+            margin-bottom: 20px; 
+            border-radius: 15px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        #video-container { 
+            display: none;      /* Hidden until the reveal */
+            position: relative; /* Allows button to sit on top of video */
+            width: 90%;         /* Responsive width */
+            max-width: 800px;   /* Limits size on big screens */
+            aspect-ratio: 16 / 9; 
+            margin-top: 20px;
+            border-radius: 15px;
+            overflow: hidden;   /* Clips the video corners to the border-radius */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        #video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        #unmute-btn {
+            display: none; /* Hidden until birthday logic runs */
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 999;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 50px; /* Pill shape */
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            
+            /* The transition magic */
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            opacity: 1;
+        }
+        
+        /* When this class is added via JS, the button fades */
+        #unmute-btn.hidden {
+            opacity: 0;
+            pointer-events: none; /* Prevents clicking while it's fading */
+            transform: translateY(-10px); /* Subtle lift while fading */
+        }
+        
+        img {
+          animation: shake 0.5s;
+          animation-iteration-count: infinite;
+        }
+        
+        @keyframes shake {
+          0% { transform: translate(1px, 1px) rotate(0deg); }
+          10% { transform: translate(-1px, -2px) rotate(-1deg); }
+          20% { transform: translate(-3px, 0px) rotate(1deg); }
+          30% { transform: translate(3px, 2px) rotate(0deg); }
+          40% { transform: translate(1px, -1px) rotate(1deg); }
+          50% { transform: translate(-1px, 2px) rotate(-1deg); }
+          60% { transform: translate(-3px, 1px) rotate(0deg); }
+          70% { transform: translate(3px, 1px) rotate(-1deg); }
+          80% { transform: translate(-1px, -1px) rotate(1deg); }
+          90% { transform: translate(1px, 2px) rotate(0deg); }
+          100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 999;
+        }
+        
+        .confetti {
+            position: absolute;
+            /* Start everything at the bottom-center */
+            left: 50%;
+            bottom: 0;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+        
+        @keyframes fountain {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            /* The "Peak" of the jump */
+            50% {
+                opacity: 1;
+            }
+            100% {
+                /* var(--x) and var(--y) will be set by JavaScript */
+                transform: translate(var(--x), var(--y)) scale(0.5) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="answer">Checking...</div>
+    <img id="festive-image" src="/isitrutendosbirthday/rutendo.png" alt="Happy Birthday!">
+    <div id="video-container">
+        <button id="unmute-btn" onclick="playWithSound()">🔊 Tap for Sound</button>
+        <iframe 
+            src="https://www.youtube.com/embed/vYMxOzxKYYo?autoplay=1&mute=1" 
+            allow="autoplay; encrypted-media" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+
+<script>
+    const TARGET_MONTH = 1; // 0 = January, 11 = December 
+    const TARGET_DAY = 1;
+    const VIDEO_ID = "vYMxOzxKYYo"; 
+
+    const now = new Date();
+    const isBirthday = (now.getMonth() === TARGET_MONTH && now.getDate() === TARGET_DAY);
+
+    if (isBirthday) {
+        document.getElementById('answer').innerText = "YES!";
+        document.getElementById('festive-image').style.display = "block";
+        document.getElementById('video-container').style.display = "block";
+        document.getElementById('unmute-btn').style.display = "block";
+        
+        // Start muted video
+        const iframe = document.querySelector('iframe');
+        iframe.src = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&mute=1`;
+        
+        document.body.style.backgroundColor = "#ffeb3b";
+
+        // 🎉 Launch the Big Confetti!
+        launchConfetti();
+    } else {
+        document.getElementById('answer').innerText = "NO";
+    }
+
+    function launchConfetti() {
+        const container = document.createElement('div');
+        container.className = 'confetti-container';
+        document.body.appendChild(container);
+    
+        const colors = ['#ff4081', '#ffeb3b', '#3f51b5', '#4caf50', '#00bcd4'];
+    
+        for (let i = 0; i < 100; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            
+            // Random style
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px'; // Mix of circles and squares
+            
+            // Randomize the "Spread" using CSS Variables
+            // Horizontal: -400px to +400px | Vertical: -60vh to -90vh
+            const destinationX = (Math.random() - 0.5) * 800 + 'px';
+            const destinationY = -(Math.random() * 40 + 60) + 'vh';
+            
+            confetti.style.setProperty('--x', destinationX);
+            confetti.style.setProperty('--y', destinationY);
+            
+            // Randomize timing
+            const duration = Math.random() * 1.5 + 1.5 + 's';
+            confetti.style.animation = `fountain ${duration} ease-out forwards`;
+    
+            container.appendChild(confetti);
+        }
+    
+        // Clean up
+        setTimeout(() => { container.remove(); }, 4000);
+    }
+
+    function playWithSound() {
+        const iframe = document.querySelector('iframe');
+        const btn = document.getElementById('unmute-btn');
+        btn.classList.add('hidden');
+
+        //reload with sound
+        setTimeout(() => {
+            iframe.src = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1`;
+        }, 200); 
+        setTimeout(() => { btn.style.display = 'none'; }, 700);
+    }
+</script>
+    
+</body>
+</html>
